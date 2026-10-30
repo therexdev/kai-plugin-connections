@@ -2,8 +2,8 @@
 (() => {
   const feature = "connections";
   const call = (method, input) => window.kai.call(method, input);
-  // Keep the original companion protocol while crossing the reviewed private
-  // broker. The broker owns the action allowlist and native approvals.
+  // Keep the original companion protocol while crossing the plugin-owned native
+  // service. The service owns its operations and native approvals.
   window.kaiCompanionBridge = Object.freeze({
     manage: async (action, input = {}) => {
       try { return { ok: true, result: await call(feature + ".ui." + action, input) }; }
@@ -25,7 +25,7 @@
       if (notice) { notice.textContent = error.message; notice.classList.add("error"); }
     });
   });
-  // Credentials are submitted once to Core, never retained on a hidden window.
+  // Credentials are submitted once to the plugin service, never retained on a hidden window.
   const clearPasswords = () => { for (const input of document.querySelectorAll('input[type="password"]')) input.value = ""; };
   document.addEventListener("visibilitychange", () => { if (document.hidden) clearPasswords(); });
   window.addEventListener("pagehide", clearPasswords);

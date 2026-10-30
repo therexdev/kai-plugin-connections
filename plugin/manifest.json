@@ -1,17 +1,31 @@
 {
-  "schema": 1,
-  "apiVersion": 2,
+  "schema": 2,
+  "apiVersion": 3,
   "id": "kai.connections",
   "name": "KAI Connections",
-  "version": "0.2.0",
-  "description": "The original complete Connections workspace: app catalog, account sign-in, selected actions, custom APIs and encrypted credentials.",
+  "version": "0.3.0",
+  "description": "Connected app accounts, OAuth, API actions and event subscriptions, with credentials stored by this plugin.",
   "entry": "index.html",
   "permissions": [
-    "connections.read",
-    "connections.manage",
-    "connections.execute",
+    "native.execute",
+    "models.read",
+    "inference.local",
+    "network.status",
+    "network.fetch",
+    "secrets.use",
+    "services.call",
+    "services.provide",
     "desktop.navigate",
     "desktop.external",
-    "connections.brain"
+    "desktop.windows",
+    "account.request"
+  ],
+  "runtime": "native",
+  "service": "service/index.js",
+  "provides": [
+    "kai.connections"
+  ],
+  "consumes": [
+    "kai.brain"
   ]
 }

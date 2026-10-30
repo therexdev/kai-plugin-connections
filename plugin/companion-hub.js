@@ -27,7 +27,7 @@
   function draw() {
     shell(); const out = host().querySelector(".hub-content");
     if (!bridge) { out.innerHTML = empty("Open the installed KAI desktop app", "Brain, private API connections, and durable workflows are available in Koinos AI Test."); return; }
-    if (state.locked) { out.innerHTML = empty("Your companion data is locked", "Unlock your original OS keychain and restart KAI. Your saved data will stay intact."); return; }
+    if (state.locked) { out.innerHTML = empty("Your companion data is locked", "Unlock secure OS storage and reopen this app. Saved plugin data has been preserved."); return; }
     if (editor) { out.innerHTML = editorHTML(); return; }
     if (current === "brain") window.KaiBrain.render(out, { state, section: tab.brain, manage: childManage, navigate: async key => { await refresh(); return action("tab", key); } });
     if (current === "workflows") window.KaiWorkflows.render(out, { state, section: tab.workflows, manage: childManage, navigate: async key => { await refresh(); return action("tab", key); } });

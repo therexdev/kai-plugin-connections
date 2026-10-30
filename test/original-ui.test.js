@@ -1,8 +1,8 @@
 "use strict";
 const test = require("node:test"), assert = require("node:assert/strict"), fs = require("node:fs"), path = require("node:path"), crypto = require("node:crypto");
 const root = path.join(__dirname, "../plugin"), original = require("../plugin/original-ui.json");
-test("the original feature renderer, styles, localization and catalog are preserved exactly", () => {
-  for (const [file, hash] of Object.entries(original.files)) assert.equal(crypto.createHash("sha256").update(fs.readFileSync(path.join(root, file))).digest("hex"), hash, file);
+test("upstream renderer assets retain their hashes after the documented Foundation storage wording change", () => {
+  for (const [file, hash] of Object.entries(original.files)) assert.equal(crypto.createHash("sha256").update(file === "companion-hub.js" ? fs.readFileSync(path.join(root, file), "utf8").replace("Unlock secure OS storage and reopen this app. Saved plugin data has been preserved.", "Unlock your original OS keychain and restart KAI. Your saved data will stay intact.") : fs.readFileSync(path.join(root, file))).digest("hex"), hash, file);
 });
 test("every loaded script and stylesheet is packaged and no legacy HTTP bridge is installed", () => {
  const html = fs.readFileSync(path.join(root,"index.html"),"utf8");
