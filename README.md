@@ -32,3 +32,7 @@ The `plugin/` directory contains a dependency-free frontend. `window.kai.call` i
 Run `npm test` using Node 20 or later. Tests exercise startup without network mutations, JSON validation, form dispatch, credential clearing, and untrusted text escaping. Core separately tests encrypted-store preservation, host-only credentials, native review, response/error redaction, and privacy enforcement. Live Composio authorization requires a real account and is not simulated by a claim of production validation.
 
 Publisher keys belong outside this repository. Core's release pipeline builds and signs the package; do not place signing keys or personal credentials in source.
+
+## Workspace appearance
+
+The plugin uses the original Connections workspace: a section rail, searchable app catalog with category and sign-in filters, connected-account cards, and connection-method settings. The bundled app catalog and platform marks are local assets, so browsing them does not make a network request. Connecting still goes through Core’s existing native review and browser sign-in. Catalog metadata can be older than the live provider; actual sign-in availability is checked by Core.

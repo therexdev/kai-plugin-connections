@@ -3,7 +3,7 @@
   "apiVersion": 2,
   "id": "kai.connections",
   "name": "KAI Connections",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Connect your apps and APIs with encrypted local credentials and reviewed actions.",
   "entry": "index.html",
   "permissions": [
