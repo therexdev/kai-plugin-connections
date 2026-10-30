@@ -1,0 +1,2 @@
+/* The original feature fills its independent plugin window. */
+#app,#main{width:100%;min-height:0}#main{overflow:auto}.companion-hub{width:100%;flex:1}.plugin-notice-close{float:right;margin-left:12px;padding:1px 7px;min-height:24px;border:0;background:transparent;color:inherit;font-size:18px;line-height:1.2}.hub-notice:has(.plugin-notice-close),.bn-notice:has(.plugin-notice-close),.cn-notice:has(.plugin-notice-close){display:block}

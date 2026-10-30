@@ -3,12 +3,15 @@
   "apiVersion": 2,
   "id": "kai.connections",
   "name": "KAI Connections",
-  "version": "0.1.1",
-  "description": "Connect your apps and APIs with encrypted local credentials and reviewed actions.",
+  "version": "0.2.0",
+  "description": "The original complete Connections workspace: app catalog, account sign-in, selected actions, custom APIs and encrypted credentials.",
   "entry": "index.html",
   "permissions": [
     "connections.read",
     "connections.manage",
-    "connections.execute"
+    "connections.execute",
+    "desktop.navigate",
+    "desktop.external",
+    "connections.brain"
   ]
 }
