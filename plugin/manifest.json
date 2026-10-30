@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "apiVersion": 2,
+  "id": "kai.connections",
+  "name": "KAI Connections",
+  "version": "0.1.0",
+  "description": "Connect your apps and APIs with encrypted local credentials and reviewed actions.",
+  "entry": "index.html",
+  "permissions": [
+    "connections.read",
+    "connections.manage",
+    "connections.execute"
+  ]
+}
