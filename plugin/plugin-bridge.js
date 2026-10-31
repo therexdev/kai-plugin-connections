@@ -7,7 +7,7 @@
   window.kaiCompanionBridge = Object.freeze({
     manage: async (action, input = {}) => {
       try { return { ok: true, result: await call(feature + ".ui." + action, input) }; }
-      catch (error) { return { ok: false, error: String(error?.message || "The operation could not finish.") }; }
+      catch (error) { return { ok: false, error: String(error?.message || "The operation could not finish.").replace(/^Error invoking remote method '[^']+': (?:Error: )?/, "") }; }
     },
   });
   window.activateView = view => call("desktop.openView", { view: view === "api" ? "privacy" : view });

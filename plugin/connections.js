@@ -33,6 +33,8 @@
       const s = status();
       if (s.blocked) return ["Online connections are paused", "Local-Only is on. Choose Local-First in Local API → Network & privacy to connect apps.", "Open privacy settings", "privacy"];
       if (s.mode === "personal") return s.personalConfigured ? null : ["Add your Composio key", "My Composio key is selected. Add your project key, or choose KAI-managed to use the server's connection service.", "Connection settings", "setup"];
+      if (s.sessionExpired) return ["Sign in to KAI again", "Your KAI account session has expired. Sign in again in Settings → Koinos AI account, then return here.", "Sign in to KAI", "signin"];
+      if (s.managedError) return ["Couldn't check KAI-managed connections", s.managedError, "Check again", "refresh"];
       if (s.managedAvailable == null) return ["Checking KAI-managed connections…", "Checking whether your server's connection service is available.", "Check again", "refresh"];
       if (!s.managedAvailable) return ["KAI-managed connections are not enabled", "Your server has not enabled its connection service yet. If you just updated it, check again.", "Check again", "refresh"];
       if (!s.signedIn) return [s.sessionExpired ? "Sign in to KAI again" : "Sign in to KAI to connect apps", "The server's Composio service is enabled. Link this desktop app to your KAI account in Settings → Koinos AI account, then return here. No personal Composio key is needed.", "Sign in to KAI", "signin"];
@@ -45,7 +47,7 @@
     function updateReadiness() {
       for (const el of host.querySelectorAll("[data-cn-readiness]")) el.innerHTML = readinessHTML();
       const managed = host.querySelector("#cn-managed-status");
-      if (managed) KaiI18n.setText(managed, status().managedAvailable == null ? "Checking server availability…" : status().managedAvailable ? status().signedIn ? "Available · KAI account signed in" : "Available · sign in to KAI to continue" : "Waiting for the server administrator to enable it");
+      if (managed) KaiI18n.setText(managed, status().managedError || (status().managedAvailable == null ? "Checking server availability…" : status().managedAvailable ? status().signedIn ? "Available · KAI account signed in" : "Available · sign in to KAI to continue" : "Waiting for the server administrator to enable it"));
     }
     function imageFallback() {
       for (const img of host.querySelectorAll("img[data-cn-logo]")) { img.addEventListener("error", () => { img.hidden = true; }, { once: true }); if (!img.getAttribute("src")) img.hidden = true; }
@@ -171,13 +173,13 @@
     }
     async function action(name, value) {
       if (["setup", "explore", "connected"].includes(name)) return navigate(name);
-      if (name === "signin") { await window.activateView("settings"); if (window.selectAccountScope) void window.selectAccountScope(true); else void window.renderAccount?.(true); document.getElementById("account-heading")?.scrollIntoView({ block: "center" }); return; }
+      if (name === "signin") { await window.selectAccountScope(true); return; }
       if (name === "privacy") return window.activateView("api");
       if (name === "close") { drawer = null; clearTimeout(timer); host.querySelector(".cn-modal-host").innerHTML = ""; focusBeforeDrawer?.focus(); return; }
       if (name === "category") { category = value; draw(); return catalog(); }
       if (name === "more") return catalog(true);
       if (name === "refresh") {
-        logoFailures.clear();
+        logoFailures.clear(); notice("");
         try { await refresh(); } finally { if (alive()) { updateReadiness(); if (drawer?.kind === "app") drawDrawer(); else if (section === "connected") draw(); } }
         if (alive() && section === "explore") await catalog(); return;
       }

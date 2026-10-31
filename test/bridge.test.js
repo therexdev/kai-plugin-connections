@@ -17,6 +17,10 @@ test("host failures retain the original checked companion error protocol",async(
  const f=fixture(); f.context.window.kai.call=async()=>{throw Error("Saved data is locked");};
  const result=await f.bridge.manage("status"); assert.equal(result.ok,false); assert.equal(result.error,"Saved data is locked");
 });
+test("Electron transport wrappers do not obscure actionable plugin error text",async()=>{
+ const f=fixture();f.context.window.kai.call=async()=>{throw Error("Error invoking remote method 'kai-plugin:call': Error: Sign in to KAI again.");};
+ const result=await f.bridge.manage("composioRefresh");assert.equal(result.error,"Sign in to KAI again.");assert.equal(result.ok,false);
+});
 test("secret fields are cleared when hidden or closed",()=>{
  const f=fixture();f.context.document.hidden=true;f.events.visibilitychange();assert.deepEqual(f.passwords.map(p=>p.value),["",""]);
  f.passwords[0].value="new synthetic key";f.windowEvents.pagehide();assert.equal(f.passwords[0].value,"");

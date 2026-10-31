@@ -14,6 +14,8 @@ The manifest declares `kai.connections` as its provided service. Its methods are
 
 Connection credentials are encrypted in Connections' state and never included in service results. `prepare` accepts `{connectionId, operationId, variables, body, purpose}` and returns a review descriptor plus a short-lived `preparedId`; `execute({preparedId})` revalidates the exact saved request. `request` combines these steps. Agent calls require the account's agent grant; source reads require its background-read grant; writes require provider-owned approval. Event RPC returns metadata/payloads, never provider keys. Managed Composio uses Core's authenticated account request broker; personal Composio uses plugin-owned credentials.
 
+The public `/connections/status` availability check uses Core's bounded network broker at the current KAI account origin and sends no credentials. This lets signed-out users see whether managed connections are available and open Settings → Koinos AI account to sign in. All `/connections/api/*` account actions still use Core's authenticated account broker. Failed availability checks show a retryable service error; they do not remain in a loading state or change saved accounts. Changing account servers invalidates the cached availability result.
+
 ## Checks
 
 Run `npm test`. Tests cover the preserved UI, actual plugin-owned engine behavior, independent encrypted state, provider-owned review and missing-service failures. Workflows additionally tests bounded JavaScript, graph execution and a cross-plugin integration when the sibling Brain/Connections repos are present. These are synthetic local checks, not live provider/OAuth or native operating-system verification.

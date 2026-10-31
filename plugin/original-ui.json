@@ -37,5 +37,11 @@
     "assets/connections/airtable.svg": "7352bef5df319ea547be30d4d89a46eee9113df0c7ac3aa55358a6ee73ae089f",
     "assets/connections/spotify.svg": "06a7b6d8dbcbce5cacb0314de24422e0f1765f28e8b390eb67b2e96a8a7164b1",
     "assets/connections/notion.svg": "23ae59b6190d947866e8832dd8c76b9d5c1aba97fd86224d83ada47f22ec195d"
+  },
+  "adaptations": {
+    "connections.js": {
+      "sha256": "1eda0694720bee280324fb7995b19589ac0d1e751ffe6e8bc24f87e9807d9f78",
+      "reason": "Foundation styled drawer close control, explicit managed service readiness failures and retry recovery, and direct Core website-account navigation. Original upstream hash remains in files."
+    }
   }
 }

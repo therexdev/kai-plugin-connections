@@ -9,10 +9,11 @@ class CompanionComposio {
   }
   settings() { return this.store.data.composio || { mode: "managed", key: "", userId: "" }; }
   status() {
-    const s = this.settings(), token = (this.account?.status().signedIn ? this.account.status().binding : null);
-    const sessionExpired = !!(token && this.rejectedSession?.origin === this.account?.status().origin && this.rejectedSession?.binding === token);
+    const s = this.settings(), account = this.account?.status(), token = account?.signedIn ? account.binding : null;
+    const managed = this.managed?.origin === account?.origin ? this.managed : null;
+    const sessionExpired = !!(token && this.rejectedSession?.origin === account?.origin && this.rejectedSession?.binding === token);
     return { mode: s.mode, personalConfigured: !!s.key, blocked: this.privacyMode() === "local-only", signedIn: !!token && !sessionExpired, sessionExpired,
-      managedAvailable: this.managed?.available ?? null, completed: this.completed, pending: this.pending ? { toolkit: this.pending.toolkit, expiresAt: this.pending.expiresAt } : null };
+      managedAvailable: managed?.available ?? null, managedError: managed?.error || null, completed: this.completed, pending: this.pending ? { toolkit: this.pending.toolkit, expiresAt: this.pending.expiresAt } : null };
   }
   context() {
     const s = this.settings();
@@ -20,10 +21,10 @@ class CompanionComposio {
       if (!s.key) throw new CompanionError("Add your Composio key in Connection settings first.");
       return { mode: s.mode, project: fingerprint(s.key), binding: fingerprint(s.key), userId: s.userId, key: s.key };
     }
-    const origin = this.account?.status().origin, token = (this.account?.status().signedIn ? this.account.status().binding : null);
+    const account = this.account?.status(), origin = account?.origin, token = account?.signedIn ? account.binding : null;
     if (!origin || !token) throw new CompanionError("Sign in to your KAI account in Settings to use KAI-managed connections.");
     const u = new URL(origin); if (u.protocol !== "https:" && !(u.protocol === "http:" && ["localhost", "127.0.0.1", "[::1]"].includes(u.hostname))) throw new CompanionError("Managed connections require a secure account server.");
-    return { mode: "managed", origin, project: origin + ":" + (this.managed?.generation || ""), binding: token };
+    return { mode: "managed", origin, project: origin + ":" + (this.managed?.origin === origin ? this.managed.generation || "" : ""), binding: token };
   }
   current(c) { try { const x = this.context(); return c.mode === x.mode && c.project === x.project && c.binding === x.binding; } catch { return false; } }
   async guarded(fn, signal) {
@@ -33,22 +34,45 @@ class CompanionComposio {
     const both = AbortSignal.any([controller.signal, AbortSignal.timeout(45000), ...(signal ? [signal] : [])]);
     const timer = setInterval(() => { if (this.privacyMode() === "local-only") controller.abort(); }, 200); timer.unref?.();
     try { const result = await fn(both); both.throwIfAborted(); return result; }
-    catch (e) { if (e instanceof CompanionError) throw e; if (e instanceof ComposioError) throw new CompanionError(e.message); if (both.aborted) throw new CompanionError("Connection request stopped."); throw new CompanionError("Could not reach the connection service. Check your internet connection and try again."); }
+    catch (e) { if (e instanceof CompanionError) throw e; if (e instanceof ComposioError) throw new CompanionError(e.message); if (both.aborted) throw new CompanionError("Connection request stopped."); throw new CompanionError("The connection service could not complete this request. Try again shortly."); }
     finally { clearInterval(timer); this.active.delete(controller); }
   }
   async managedStatus(signal) {
-    if (!this.account?.status().origin) return this.managed = { available: false };
-    const origin = this.account.status().origin, u = new URL(origin);
-    if (u.protocol !== "https:" && !(u.protocol === "http:" && ["localhost", "127.0.0.1", "[::1]"].includes(u.hostname))) return this.managed = { available: false };
-    const r = await this.account.request("/connections/status", { signal, method: "GET" });
-    if (r.status === 404) return this.managed = { available: false };
-    if (!r.ok) throw new CompanionError("The KAI connection server is unavailable. Try again shortly.");
-    const s = await r.json(); this.managed = { available: s.available === true && s.protocol === 1, generation: String(s.generation || "") }; return this.managed;
+    const origin = this.account?.status().origin;
+    const unchanged = () => { signal?.throwIfAborted(); if (origin !== this.account?.status().origin) throw new CompanionError("The KAI account server changed. Refresh connections again."); };
+    try {
+      if (!origin) throw new CompanionError("No KAI account server is configured. Open Settings to check your Koinos AI account.");
+      let u; try { u = new URL(origin); } catch { throw new CompanionError("The KAI account server address is invalid. Check it in Settings."); }
+      if (u.origin !== origin || u.username || u.password || (u.protocol !== "https:" && !(u.protocol === "http:" && ["localhost", "127.0.0.1", "[::1]"].includes(u.hostname)))) throw new CompanionError("Managed connections require a secure account server. Check it in Settings.");
+      // Availability is public: Core's account.request requires a session even
+      // for GETs. Keep tokens out of this probe; account actions use that broker.
+      const r = await this.fetch(origin + "/connections/status", { signal, method: "GET" });
+      unchanged();
+      if (r.status === 404) { await r.body?.cancel(); return this.managed = { origin, available: false }; }
+      if (!r.ok) { await r.body?.cancel(); throw new CompanionError(`The KAI connection server returned HTTP ${r.status}. Try again shortly.`); }
+      let content = "", bytes = 0; const decoder = new TextDecoder();
+      for await (const chunk of r.body || []) { bytes += chunk.length; if (bytes > 65536) throw new CompanionError("The KAI connection server returned an invalid status response. Try again or contact its administrator."); content += decoder.decode(chunk, { stream: true }); }
+      content += decoder.decode(); unchanged();
+      let s; try { s = JSON.parse(content); } catch { throw new CompanionError("The KAI connection server returned an unreadable status response. Try again or contact its administrator."); }
+      if (!s || typeof s.available !== "boolean" || s.protocol !== 1 || (s.generation !== undefined && (typeof s.generation !== "string" || s.generation.length > 200))) throw new CompanionError("The KAI connection server uses an unsupported status response. Ask its administrator to update the connection service.");
+      return this.managed = { origin, available: s.available, generation: s.generation || "" };
+    } catch (e) {
+      const message = signal?.aborted ? "The KAI connection check stopped. Check again when you are ready." : e instanceof CompanionError ? e.message : "The KAI connection server could not be reached. Try again shortly.";
+      if (origin === this.account?.status().origin) this.managed = { origin, available: null, error: message };
+      throw new CompanionError(message);
+    }
   }
   async call(action, input = {}, signal, ctx = this.context()) {
     if (ctx.mode === "managed") {
-      if (!this.managed?.available) throw new CompanionError("KAI-managed connections are not enabled yet. You can use your own Composio key in Connection settings.");
-      const r = await this.account.request("/connections/api/" + action, { method: "POST", signal, body: { ...input, generation: this.managed.generation } });
+      if (this.managed?.origin !== ctx.origin || !this.managed?.available) throw new CompanionError(this.status().managedError || "Refresh KAI-managed connections before connecting an app. You can also use your own Composio key in Connection settings.");
+      let r;
+      try { r = await this.account.request("/connections/api/" + action, { method: "POST", signal, body: { ...input, generation: this.managed.generation } }); }
+      catch (e) {
+        const account = this.account?.status();
+        if (!account?.signedIn) throw new CompanionError("Sign in to your KAI account in Settings to use KAI-managed connections.");
+        if (account.origin !== ctx.origin || account.binding !== ctx.binding) throw new CompanionError("Your KAI account changed. Refresh connections again.");
+        throw e;
+      }
       let content = "", bytes = 0; const decoder = new TextDecoder();
       for await (const chunk of r.body || []) { bytes += chunk.length; if (bytes > 4 * 1024 * 1024) throw new CompanionError("The connection result is too large."); content += decoder.decode(chunk, { stream: true }); }
       content += decoder.decode(); signal?.throwIfAborted();
