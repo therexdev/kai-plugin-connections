@@ -114,7 +114,7 @@
     }
     function openDrawer(title, content) {
       if (!host.querySelector(".cn-drawer")) focusBeforeDrawer = document.activeElement;
-      host.querySelector(".cn-modal-host").innerHTML = KaiI18n.html`<div class="cn-overlay"><section class="cn-drawer" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="cn-drawer-heading"><h2>${esc(title)}</h2>${btn("Close", "close")}</div><div class="cn-notice" role="status"></div>${content}</section></div>`; imageFallback(); host.querySelector(".cn-drawer button")?.focus();
+      host.querySelector(".cn-modal-host").innerHTML = KaiI18n.html`<div class="cn-overlay"><section class="cn-drawer" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="cn-drawer-heading"><h2>${esc(title)}</h2><button type="button" class="cn-button cn-dialog-close" data-cn="close" aria-label="Close dialog" title="Close">×</button></div><div class="cn-notice" role="status"></div>${content}</section></div>`; imageFallback(); host.querySelector(".cn-drawer button")?.focus();
     }
     function drawDrawer() {
       if (!drawer) return; const d = drawer;

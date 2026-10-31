@@ -1,0 +1,13 @@
+{
+  "format": 1,
+  "asset": "kai-plugin-connections-0.3.1.kaiplugin",
+  "bytes": 1458368,
+  "sha256": "e4fc70b62cd962db3e1638ad0b283bc1d3b13803631d06ebfa2cf2a1cef6b7c0",
+  "parts": [
+    {
+      "file": "kai-plugin-connections-0.3.1.kaiplugin.part001",
+      "bytes": 1458368,
+      "sha256": "e4fc70b62cd962db3e1638ad0b283bc1d3b13803631d06ebfa2cf2a1cef6b7c0"
+    }
+  ]
+}

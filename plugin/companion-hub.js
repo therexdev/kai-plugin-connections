@@ -100,7 +100,7 @@
       editor.item.steps = parsed.steps; draw(); note("Draft ready. Review every step and save when it matches your intent."); return;
     }
     const deleting = { deleteNote: ["notes", "note"], deleteGoal: ["goals", "goal"], deleteSource: ["sources", "source and its indexed content"], deleteConnection: ["", "connection"], deleteWorkflow: ["", "workflow and run history"] };
-    if (deleting[name]) { if (!confirm("Remove this " + deleting[name][1] + "?")) return; await manage(name === "deleteConnection" ? "removeConnection" : name === "deleteWorkflow" ? "removeWorkflow" : "remove", { id: key, kind: deleting[name][0] }); }
+    if (deleting[name]) { if (!await window.kai.dialogs.confirm("Remove this " + deleting[name][1] + "?")) return; await manage(name === "deleteConnection" ? "removeConnection" : name === "deleteWorkflow" ? "removeWorkflow" : "remove", { id: key, kind: deleting[name][0] }); }
     else if (name === "completeGoal") await manage("goal", { ...state.goals.find(g => g.id === key), status: "done" });
     else if (name === "sourceToggle") await manage("sourceToggle", { id: key, enabled: !state.sources.find(s => s.id === key).autoSync });
     else await manage(name, { id: key });

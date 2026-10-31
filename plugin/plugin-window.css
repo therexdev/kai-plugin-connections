@@ -1,2 +1,12 @@
 /* The original feature fills its independent plugin window. */
 #app,#main{width:100%;min-height:0}#main{overflow:auto}.companion-hub{width:100%;flex:1}.plugin-notice-close{float:right;margin-left:12px;padding:1px 7px;min-height:24px;border:0;background:transparent;color:inherit;font-size:18px;line-height:1.2}.hub-notice:has(.plugin-notice-close),.bn-notice:has(.plugin-notice-close),.cn-notice:has(.plugin-notice-close){display:block}
+
+/* App-owned connection reviews share Core's dialog typography and surfaces. */
+.cn-overlay{background:#18304d55;backdrop-filter:blur(3px)}
+.cn-drawer{background:#f4f7fd;color:#14284e;border-left:1px solid #dce5f2;font:14px/1.6 Inter,"Segoe UI",Arial,sans-serif}
+.cn-drawer-heading{margin:-28px -28px 24px;padding:18px 24px;background:#fff;border-bottom:1px solid #dce5f2}
+.cn-drawer-heading h2{font-size:20px;font-weight:650;letter-spacing:-.4px;line-height:1.35}
+.cn-drawer .cn-dialog-close{display:flex;align-items:center;justify-content:center;flex:none;width:32px;min-height:32px;padding:0;border:0;background:transparent;box-shadow:none;color:#61728d;font:24px/1 Inter,"Segoe UI",Arial,sans-serif;border-radius:8px}
+.cn-drawer .cn-dialog-close:hover{background:#edf4ff;color:#155eef}
+.cn-drawer button:focus-visible,.cn-drawer input:focus-visible,.cn-drawer textarea:focus-visible,.cn-drawer select:focus-visible{outline:2px solid #155eef;outline-offset:3px}
+@media(max-width:760px){.cn-drawer-heading{margin:-20px -20px 20px;padding:16px 20px}}
