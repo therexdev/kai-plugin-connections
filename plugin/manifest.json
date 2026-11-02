@@ -3,7 +3,7 @@
   "apiVersion": 3,
   "id": "kai.connections",
   "name": "KAI Connections",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Connected app accounts, OAuth, API actions and event subscriptions, with credentials stored by this plugin.",
   "entry": "index.html",
   "permissions": [

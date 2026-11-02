@@ -6,7 +6,7 @@
       if (!notice.textContent.trim() || notice.querySelector(".plugin-notice-close")) continue;
       const button = document.createElement("button"); button.type = "button";
       button.className = "plugin-notice-close"; button.textContent = "×";
-      button.setAttribute("aria-label", "Dismiss notification");
+      KaiI18n.setAttr(button, "aria-label", "Dismiss notification");
       button.addEventListener("click", () => notice.replaceChildren()); notice.append(button);
     }
   };

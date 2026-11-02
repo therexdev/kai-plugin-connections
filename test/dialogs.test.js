@@ -1,4 +1,5 @@
 "use strict";
+const localeFixture = require("./i18n-fixture");
 const test = require("node:test"), assert = require("node:assert/strict"), fs = require("node:fs"), path = require("node:path"), vm = require("node:vm");
 const source = fs.readFileSync(path.join(__dirname, "../plugin/companion-hub.js"), "utf8");
 function fixture() {
@@ -7,7 +8,7 @@ function fixture() {
   const out = {}, message = { textContent: "", classList: { toggle() {} } };
   const host = { hidden: true, innerHTML: "", querySelector: selector => selector === ".hub-content" ? out : selector === ".hub-notice" ? message : null };
   const window = { KaiBrain: { render() {} }, KaiCompanionClient: { checked: async value => value }, kaiCompanionBridge: { async manage(action, input) { calls.push({ action, input }); return action === "status" ? state : {}; } }, kai: { dialogs: { confirm(message) { reviews.push(message); return new Promise(resolve => { answer = resolve; }); } } } };
-  const context = { window, document: { getElementById: () => host, addEventListener(name, handler) { handlers[name] = handler; } }, KaiI18n: { html: (parts, ...values) => typeof parts === "string" ? parts : parts.reduce((out, part, i) => out + part + (values[i] ?? ""), "") }, setTimeout: () => 0, clearTimeout() {} };
+  const context = { window, document: { getElementById: () => host, addEventListener(name, handler) { handlers[name] = handler; } }, KaiI18n: localeFixture, setTimeout: () => 0, clearTimeout() {} };
   vm.runInNewContext(source, context);
   const button = { disabled: false, dataset: { hubAction: "deleteNote", id: "reviewed-id" }, closest: () => host };
   return { window, calls, reviews, button, answer: value => answer(value), click: () => handlers.click({ target: { closest: () => button } }) };

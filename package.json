@@ -1,9 +1,10 @@
 {
   "name": "kai-plugin-connections",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "private": true,
   "license": "MIT",
   "scripts": {
-    "test": "node --test test/*.test.js"
+    "test": "node --test test/*.test.js",
+    "build:locales": "node scripts/build-locales.js"
   }
 }

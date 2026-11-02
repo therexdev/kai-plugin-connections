@@ -40,12 +40,20 @@
   },
   "adaptations": {
     "connections.js": {
-      "sha256": "1eda0694720bee280324fb7995b19589ac0d1e751ffe6e8bc24f87e9807d9f78",
-      "reason": "Foundation styled drawer close control, explicit managed service readiness failures and retry recovery, and direct Core website-account navigation. Original upstream hash remains in files."
+      "sha256": "e65364c695cfdb9ee9c47a5bf0ad465facfe3185cbef6e963ce71dd5d36d6f18",
+      "reason": "Bind plugin-owned interface text to the shared Core language, preserve literal user data, and retain asynchronous Core dialogs."
     },
     "i18n.js": {
-      "sha256": "05558760b6886a7469043d74d91c70946d8f16292318e8d247d7043c0e1c54b2",
-      "reason": "Follow the shared Core language without origin-local preferences; bind interface text separately from user content."
+      "sha256": "2c40df2be50f03966a7e415cdfc1abf5fbeae13e67f905ce21fb4e1706848394",
+      "reason": "Bind plugin-owned interface text to the shared Core language, preserve literal user data, and retain asynchronous Core dialogs."
+    },
+    "companion-hub.js": {
+      "sha256": "8867340aadf60a88ff3822a0c2b3d7086c599310271c4e9ba23a4e71a7a73684",
+      "reason": "Bind plugin-owned interface text to the shared Core language, preserve literal user data, and retain asynchronous Core dialogs."
+    },
+    "companion-client.js": {
+      "sha256": "bf9b7b52690cd39812ed916d57b58be0d4ef976706146e669c69afc456887b48",
+      "reason": "Bind plugin-owned interface text to the shared Core language, preserve literal user data, and retain asynchronous Core dialogs."
     }
   }
 }

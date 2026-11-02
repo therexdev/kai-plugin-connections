@@ -1,4 +1,5 @@
 "use strict";
+const localeFixture = require("./i18n-fixture");
 const test = require("node:test"), assert = require("node:assert/strict"), fs = require("node:fs"), path = require("node:path"), vm = require("node:vm");
 const source = fs.readFileSync(path.join(__dirname, "../plugin/connections.js"), "utf8");
 const tick = () => new Promise(resolve => setImmediate(resolve));
@@ -11,7 +12,7 @@ function fixture(section = "explore") {
     querySelectorAll: selector => selector === "[data-cn-readiness]" ? [readiness] : selector === ".cn-notice" ? [notices] : [], addEventListener(name, handler) { handlers[name] = handler; } };
   const window = { KaiConnectionCatalog: { items: [], categories: [] }, selectAccountScope: async value => { navigated.push(value); } };
   vm.runInNewContext(source, { window, document: { addEventListener() {} }, AbortController, setTimeout, clearTimeout,
-    KaiI18n: { html: (parts, ...values) => typeof parts === "string" ? parts : parts.reduce((s, p, i) => s + p + (values[i] ?? ""), ""), message: (parts, ...values) => parts.reduce((s, p, i) => s + p + (values[i] ?? ""), ""), setText: (el, value) => { el.textContent = value; } } });
+    KaiI18n: localeFixture });
   window.KaiConnections.render(host, { section, state, manage: async action => { calls.push(action); if (action === "composioRefresh") return probe(); if (action === "status") return state; throw Error(action); }, navigate() {} });
   return { readiness, managed, notices, calls, navigated, complete: async next => { state = { ...state, composio: { ...state.composio, ...next } }; finish(); await tick(); },
     fail: message => { probe = async () => { state = { ...state, composio: { ...state.composio, managedAvailable: null, managedError: message } }; throw Error(message); }; },
